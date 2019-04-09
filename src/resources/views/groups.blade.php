@@ -5,24 +5,34 @@
 @section('body_content_main')
 @include('layouts.blocks.tabler.alert')
 
-    <div class="container" id="listing">
-        <div class="row mt-3" v-show="groups.length > 0">
-            <group-card class="s12 m4" v-for="(group, index) in groups" :key="group.id" :group="group" :index="index"
-                         v-on:edit-group="editGroup" v-on:delete-group="deleteGroup"></group-card>
+<div class="row">
+    @include('layouts.blocks.tabler.sub-menu')
+
+    <div class="col-md-9 col-xl-9">
+
+        <div class="container" id="listing">
+            <div class="row mt-3" v-show="groups.length > 0">
+                <group-card class="s12 m4" v-for="(group, index) in groups" :key="group.id" :group="group" :index="index"
+                             v-on:edit-group="editGroup" v-on:delete-group="deleteGroup"></group-card>
+            </div>
+            <div class="col s12" v-if="groups.length === 0">
+                @component('layouts.blocks.tabler.empty-fullpage')
+                    @slot('title')
+                        No Customer Groups
+                    @endslot
+                    You can add one or more customer groups to allow you categorise your customers.
+                    @slot('buttons')
+                        <a href="#" v-on:click.prevent="createGroup" class="btn btn-primary btn-sm">Add Group</a>
+                    @endslot
+                @endcomponent
+            </div>
+            @include('modules-customers::modals.new-group')
         </div>
-        <div class="col s12" v-if="groups.length === 0">
-            @component('layouts.blocks.tabler.empty-fullpage')
-                @slot('title')
-                    Customer Groups
-                @endslot
-                You can add one or more customer groups to allow you categorise your customers.
-                @slot('buttons')
-                    <a href="#" v-on:click.prevent="createGroup" class="btn btn-primary btn-sm">Add Group</a>
-                @endslot
-            @endcomponent
-        </div>
-        @include('crm.modals.new-group')
+
     </div>
+
+</div>
+
 
 @endsection
 @section('body_js')
@@ -36,7 +46,7 @@
             methods: {
                 createGroup: function () {
                     this.group = {name: '', description: ''};
-                    $('#manage-group-modal').modal('open');
+                    $('#manage-group-modal').modal('show');
                 },
                 editGroup: function (index) {
                     let group = typeof this.groups[index] !== 'undefined' ? this.groups[index] : null;
@@ -44,7 +54,7 @@
                         return;
                     }
                     this.group = group;
-                    $('#manage-group-modal').modal('open');
+                    $('#manage-group-modal').modal('show');
                 },
                 deleteGroup: function (index) {
                     let group = typeof this.groups[index] !== 'undefined' ? this.groups[index] : null;
@@ -54,17 +64,16 @@
                     group.is_default = group.is_default ? 1 : 0;
                     this.group = group;
                     let context = this;
-                    swal({
+                    Swal.fire({
                         title: "Are you sure?",
                         text: "You are about to delete group " + context.group.name,
                         type: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#DD6B55",
                         confirmButtonText: "Yes, delete it!",
-                        closeOnConfirm: false,
-                        showLoaderOnConfirm: true
-                    }, function() {
-                        axios.delete("/xhr/crm/groups/" + context.group.id)
+                        showLoaderOnConfirm: true,
+                        preConfirm: (login) => {
+                        return axios.delete("/mcu/groups-delete/" + context.group.id)
                             .then(function (response) {
                                 console.log(response);
                                 context.groups.splice(index, 1);
@@ -88,13 +97,18 @@
                                 }
                                 return swal("Delete Failed", message, "warning");
                             });
-                    });
+                        },
+                        allowOutsideClick: () => !Swal.isLoading()
+                    })
+                    /*.then(function() {
+                        Swal.fire('Ajax request finished!')
+                    })*/
                 }
             }
         });
 
         new Vue({
-            el: '#header-button',
+            el: '#sub-menu-action',
             data: {
 
             },
