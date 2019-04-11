@@ -21,7 +21,7 @@
                            data-show-refresh="true"
                            data-unique-id="id"
                            data-id-field="id"
-                           data-row-attributes="app.formatters.customers_customers"
+                           data-row-attributes="processRows"
                            data-response-handler="processRecords"
                            data-url="{{ route('customers-search') }}?groups={{ $groupFilters or '' }}"
                            data-page-list="[10,25,50,100,200,300,500]"
@@ -252,6 +252,31 @@
         vmPage.caccounts = response.rows;
         vmPage.triggerEdit();
         return response;
+    }
+
+    function processRows(row, index) {
+            //row.buttons = '<a class="waves-effect btn-flat btn-small grey-text text-darken-3 view" href="/apps/crm/customers/' + row.id + '">View</a>'+
+            //'<a class="waves-effect btn-flat remove red-text btn-small" href="#" data-id="'+row.id+'" data-name="'+row.name+'">DELETE</a>';
+
+            //let user = typeof row.user !== 'undefined' && row.user.data !== null ? row.user.data : null;
+            if (row.id !== null) {
+                row.avatar = '<div class="avatar d-block" style="background-image: url(' + row.photo + ')">';
+                if (row.photo === null) {
+                    row.avatar += row.firstname.substr(0, 1) + row.lastname.substr(0, 1);
+                }
+                row.avatar+= '</div>';
+                row.name = row.firstname + ' ' + row.lastname;
+                //row.email = row.email;
+                //row.phone = row.phone;
+            }
+            row.created_at = moment(row.created_at).format('DD MMM, YYYY');
+            if (app.currentUser.uuid !== row.id) {
+                row.menu = '<div style="font-size: 1.2rem; margin-left: 10px;">';
+                row.menu += '<a href="customers-customers/' + row.id + '" class="btn btn-icon"><i data-action="view" data-index="' + index + '"  class="fe fe-eye"></i></a>';
+                row.menu += '<a href="#" class="btn btn-icon"><i  data-action="delete" data-index="' + index + '" class="fe fe-trash-2"></i></a>';
+                row.menu += '</div>';
+            }
+            return row;
     }
 </script>
 @endsection

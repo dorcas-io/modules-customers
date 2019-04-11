@@ -21,7 +21,8 @@ class ModulesCustomersController extends Controller {
             'page' => ['title' => config('modules-customers.title')],
             'header' => ['title' => config('modules-customers.title')],
             'selectedMenu' => 'customers',
-            'submenuConfig' => 'navigation-menu.modules-customers.sub-menu'
+            'submenuConfig' => 'navigation-menu.modules-customers.sub-menu',
+            'submenuAction' => ''
         ];
     }
 
@@ -33,8 +34,8 @@ class ModulesCustomersController extends Controller {
     public function customers(Request $request, Sdk $sdk)
     {
         $this->data['page']['title'] .= ' &rsaquo; Customer Manager';
-        $this->data['header']['title'] .= ' &rsaquo; Customer Manager';
-        $this->data['selectedMenu'] = ' customers';
+        $this->data['header']['title'] = 'Customer Manager';
+        $this->data['selectedMenu'] = 'customers';
         $this->data['submenuAction'] = '<a href="'.route("customers-new").'" class="btn btn-primary btn-block">Add Customer</a>';
 
         $this->setViewUiResponse($request);
@@ -101,6 +102,11 @@ class ModulesCustomersController extends Controller {
 
     public function customers_view(Request $request, Sdk $sdk, string $id)
     {
+        $this->data['page']['title'] .= ' &rsaquo; Customer Profile';
+        $this->data['header']['title'] = 'Customer Profile';
+        $this->data['selectedMenu'] = 'customer';
+        $this->data['submenuAction'] = '<a href="'.route("customers-new").'" class="btn btn-primary btn-block">Add Customer</a>';
+
         $this->setViewUiResponse($request);
         $response = $sdk->createCustomerResource($id)->send('get');
         if (!$response->isSuccessful()) {
@@ -117,10 +123,36 @@ class ModulesCustomersController extends Controller {
         return view('modules-customers::customers.customer', $this->data);
     }
 
+     /**
+     * @param Request $request
+     * @param Sdk     $sdk
+     * @param string  $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function customers_update(Request $request, Sdk $sdk, string $id)
+    {
+        $model = $sdk->createCustomerResource($id);
+        $response = $model->addBodyParam('firstname', $request->input('firstname'))
+                            ->addBodyParam('lastname', $request->input('lastname'))
+                            ->addBodyParam('email', $request->input('email'))
+                            ->addBodyParam('phone', $request->input('phone'))
+                            ->send('put');
+        # make the request
+        if (!$response->isSuccessful()) {
+            // do something here
+            throw new \RuntimeException($response->errors[0]['title'] ?? 'Failed while saving the customer information.');
+        }
+        $company = $request->user()->company(true, true);
+        Cache::forget('business.customers.'.$company->id);
+        $this->data = $response->getData();
+        return response()->json($this->data);
+    }   
+
     public function custom_fields(Request $request, Sdk $sdk)
     {
         $this->data['page']['title'] .= ' &rsaquo; Custom Fields';
-        $this->data['header']['title'] .= ' &rsaquo; Custom Fields';
+        $this->data['header']['title'] = 'Custom Fields';
         $this->data['selectedMenu'] = 'custom-fields';
 
         $this->setViewUiResponse($request);
