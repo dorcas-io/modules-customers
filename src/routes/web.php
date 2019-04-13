@@ -14,30 +14,25 @@ Route::group(['middleware' => ['web'], 'namespace' => 'Dorcas\ModulesCustomers\H
     Route::get('/customers-search', 'ModulesCustomersController@customers_search')->name('customers_search');
     Route::get('/customers-customers/{id}', 'ModulesCustomersController@customers_view');
     Route::put('/customers-customers/{id}', 'ModulesCustomersController@customers_update');
-    Route::post('/customers', 'Customers\Customers@create');
-    Route::get('/customers/new', 'Customers\NewCustomer@index')->name('customers-new');
-    Route::post('/customers/new', 'Customers\NewCustomer@create');
-    Route::post('/customers/{id}', 'Customers\Customer@post');
-    Route::delete('/customers', 'Customers\Customers@delete');
+    Route::post('/customers-customers/{id}', 'ModulesCustomersController@customers_post');
+    Route::post('/customers-groups/{id}', 'ModulesCustomersController@groups_customers_add');
+    Route::delete('/customers-groups/{id}', 'ModulesCustomersController@groups_customers_delete');
+    Route::post('/customers-notes/{id}', 'ModulesCustomersController@notes_customers_add');
+    Route::delete('/customers-notes/{id}', 'ModulesCustomersController@notes_customers_delete');
+    Route::get('/customers-notes/{id}', 'ModulesCustomersController@notes_customers_read');
+    Route::delete('customers-customers/{id}', 'ModulesCustomersController@customers_delete');
+    Route::get('/customers-new', 'ModulesCustomersController@customers_new')->name('customers-new');
+    Route::post('/customers-new', 'ModulesCustomersController@customers_create');
+    Route::post('/customers-custom-fields', 'ModulesCustomersController@custom_fields_create');
+    Route::delete('/customers-custom-fields/{id}', 'ModulesCustomersController@custom_fields_delete');
+    Route::put('/customers-custom-fields/{id}', 'ModulesCustomersController@custom_fields_update');
 });
 
 Route::group(['middleware' => ['web'], 'namespace' => 'Ajax', 'prefix' => 'xhr'], function () {
     Route::get('/crm/custom-fields', 'Crm\CustomFields@search');
-    Route::post('/crm/custom-fields', 'Crm\CustomFields@create');
-    Route::delete('/crm/custom-fields/{id}', 'Crm\CustomField@delete');
-    Route::put('/crm/custom-fields/{id}', 'Crm\CustomField@update');
-    Route::delete('/crm/customers/{id}', 'Crm\Customer@delete');
-    Route::delete('/crm/customers/{id}/notes', 'Crm\Customer@deleteNote');
-    Route::get('/crm/customers/{id}/notes', 'Crm\Customer@readNotes');
-    Route::post('/crm/customers/{id}/notes', 'Crm\Customer@addNote');
-    
     Route::get('/crm/customers/{id}/deals', 'Crm\Deals@search');
     Route::post('/crm/customers/{id}/deals', 'Crm\Deals@create');
-    
     Route::post('/crm/deals/{id}', 'Crm\Deals@delete');
-    
-    Route::delete('/crm/groups/{id}/customers', 'Crm\Groups@deleteCustomers');
-    Route::post('/crm/groups/{id}/customers', 'Crm\Groups@addCustomers');
 });
 
 

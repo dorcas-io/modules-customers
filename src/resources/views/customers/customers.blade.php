@@ -23,7 +23,7 @@
                            data-id-field="id"
                            data-row-attributes="processRows"
                            data-response-handler="processRecords"
-                           data-url="{{ route('customers-search') }}?groups={{ $groupFilters or '' }}"
+                           data-url="{{ route('customers_search') }}?groups={{ $groupFilters or '' }}"
                            data-page-list="[10,25,50,100,200,300,500]"
                            data-sort-class="sortable"
                            data-search-on-enter-key="true"
@@ -99,8 +99,10 @@
             if (!target.hasAttribute('data-action')) {
                 target = target.parentNode.hasAttribute('data-action') ? target.parentNode : target;
             }
-            console.log(target, target.getAttribute('data-action'));
+            //console.log(target, target.getAttribute('data-action'));
             let action = target.getAttribute('data-action').toLowerCase();
+            let name = target.getAttribute('data-name');
+            let id = target.getAttribute('data-id');
             let index = parseInt(target.getAttribute('data-index'), 10);
             if (isNaN(index)) {
                 console.log('Index is not set.');
@@ -108,61 +110,59 @@
             }
             if (action === 'view') {
                 return true;
-            } else if (action === 'delete') {
-                this.deleteItem(index);
+            } else if (action === 'customer_delete') {
+                this.deleteItem(id,index,name);
             } else {
                 return true;
             }
         },
-        deleteItem: function (index) {
-            let context = this;
-            let caccount = typeof this.caccounts[index] !== 'undefined' ? this.caccounts[index] : {};
-            console.log(caccount);
-            if (typeof caccount.id === 'undefined') {
+        deleteItem: function (id,index, name) {
+            //console.log("Vals are "+id+", "+index+", "+name);
+            //var name = attributes['data-name'] || '';
+            //var id = attributes['data-id'] || null;
+            //console.log(name);
+            if (index === null) {
                 return false;
             }
-            swal({
-                animation: true,
-                title: "Delete this Customer?",
-                text: "You are about to remove this customer record",
-                customClass: 'swal2-btns-left',
+            context = this;
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to delete " + name + " from your contacts.",
+                type: "warning",
                 showCancelButton: true,
-                confirmButtonClass: 'swal2-btn swal2-btn-confirm',
-                confirmButtonText: 'Yes, continue.',
-                cancelButtonClass: 'swal2-btn swal2-btn-cancel',
-                cancelButtonText: 'Cancel',
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
                 closeOnConfirm: false,
-            })
-            .then((b) => {
-                console.log(b);
-                if (typeof b.dismiss !== 'undefined' && b.dismiss === 'cancel') {
-                    return '';
-                }
-                context.is_publishing = true;
-                axios.delete("/xhr/access-grants/" + caccount.id)
-                .then(function (response) {
-                    console.log(response);
+                showLoaderOnConfirm: true,
+                preConfirm: (delete_customer) => {
+                this.deleting = true;
+                return axios.delete("/mcu/customers-customers/" + id)
+                    .then(function (response) {
+                        console.log(response);
                     window.location = '{{ url()->current() }}';
-                    return swal("Done!", "The customer was successfully deleted.", "success");
-                })
-                .catch(function (error) {
-                    let message = '';
-                    if (error.response) {
-                                // The request was made and the server responded with a status code
-                                // that falls out of the range of 2xx
-                                let e = error.response.data.errors[0];
-                                message = e.title;
-                            } else if (error.request) {
-                                // The request was made but no response was received
-                                // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                                // http.ClientRequest in node.js
-                                message = 'The request was made but no response was received';
-                            } else {
-                                // Something happened in setting up the request that triggered an Error
-                                message = error.message;
-                            }
-                            return swal("Deleting Failed", message, "warning");
-                        });
+                    return swal("Deleted!", "The customer was successfully deleted", "success");
+                    })
+                    .catch(function (error) {
+                        var message = '';
+                        console.log(error);
+                        if (error.response) {
+                            // The request was made and the server responded with a status code
+                            // that falls out of the range of 2xx
+                            var e = error.response.data.errors[0];
+                            message = e.title;
+                        } else if (error.request) {
+                            // The request was made but no response was received
+                            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                            // http.ClientRequest in node.js
+                            message = 'The request was made but no response was received';
+                        } else {
+                            // Something happened in setting up the request that triggered an Error
+                            message = error.message;
+                        }
+                        return swal("Delete Failed", message, "warning");
+                    });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
             });
         },
 
@@ -273,7 +273,7 @@
             if (app.currentUser.uuid !== row.id) {
                 row.menu = '<div style="font-size: 1.2rem; margin-left: 10px;">';
                 row.menu += '<a href="customers-customers/' + row.id + '" class="btn btn-icon"><i data-action="view" data-index="' + index + '"  class="fe fe-eye"></i></a>';
-                row.menu += '<a href="#" class="btn btn-icon"><i  data-action="delete" data-index="' + index + '" class="fe fe-trash-2"></i></a>';
+                row.menu += '<a href="#" class="btn btn-icon customer_delete" data-id="'+row.id+'" data-name="'+row.name+'"><i  data-action="customer_delete" data-index="' + index + '" data-name="'+row.name+'" data-id="'+row.id+'" class="fe fe-trash-2"></i></a>';
                 row.menu += '</div>';
             }
             return row;

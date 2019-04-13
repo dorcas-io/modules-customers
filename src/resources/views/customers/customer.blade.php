@@ -7,10 +7,10 @@
 
 @include('layouts.blocks.tabler.alert')
 
-<div class="row">
+<div class="row" id="customer_profile_card">
     @include('layouts.blocks.tabler.sub-menu')
 
-    <div class="col-md-4" id="customer_profile_card">
+    <div class="col-md-4">
         <div class="card card-profile">
             <div class="card-header" v-bind:style="{ 'background-image': 'url(' + backgroundImage + ')' }"></div>
             <div class="card-body text-center">
@@ -38,15 +38,12 @@
           <div class="card-body">
                     @if (!empty($customer->contacts['data']))
                         <!-- Profile About Details  -->
-                        <ul id="profile-page-about-details" class="collection z-depth-1">
+                        <ul class="list-group">
                             @foreach ($customer->contacts['data'] as $contact)
-                                <li class="collection-item">
-                                    <div class="row">
-                                        <div class="col s5">
-                                            <i class="material-icons left">{{ suggest_contact_field_icon_name($contact['name']) }}</i>
-                                            {{ title_case($contact['name']) }}</div>
-                                        <div class="col s7 right-align">{{ $contact['value']}}</div>
-                                    </div>
+                                <li class="list-group-item">
+                                    <i class="fa {{ suggest_contact_field_icon_name_tabler($contact['name']) }}" aria-hidden="true"></i>
+                                    <h5 class="list-group-item-heading">{{ title_case($contact['name']) }}</h5>
+                                    <p class="list-group-item-text">{{ $contact['value']}}</p>
                                 </li>
                             @endforeach
                         </ul>
@@ -64,41 +61,94 @@
           <div class="card-status bg-blue"></div>
           <div class="card-header">
             <h3 class="card-title">Groups</h3>
-          </div>
-          <div class="card-body">
-            Manage <strong>groups</strong> that @{{ customer.firstname }} belongs to below:
-          </div>
         </div>
+        <div class="card-body">
+            Manage <strong>groups</strong> that @{{ customer.firstname }} belongs to below:
+            <ul class="nav nav-tabs nav-justified">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#profile_groups">Groups</a>
+            </li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane container active" id="profile_groups">
+    <br/>
+    <form method="post" v-on:submit.prevent="addCustomerToGroup" action="">
+        {{ csrf_field() }}
+        <fieldset class="form-fieldset">
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <select id="grp-customer" v-model="addToGroup.group" class="form-control" required>
+                    <option value="" disabled>Select a Group</option>
+                    <option v-for="group in groups" v-if="addedGroups.indexOf(group.id) === -1"
+                    :key="group.id" :value="group.id">@{{ group.name }}</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-primary" type="submit" name="action">Add to Group</button>
+            </div>
+        </div>
+    </fieldset>
+    </form>
+
+    <div class="col-md-6" v-if="typeof customer.groups !== 'undefined' && customer.groups.data.length > 0">
+        <div class="tag"v-for="(group, index) in customer.groups.data" :key="group.id">
+          @{{ group.name }}
+          <a href="#" class="tag-addon tag-danger"><i class="fe fe-trash" data-ignore-click="true" v-bind:data-index="index"
+                    v-on:click.prevent="removeGroup($event)"></i></a>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+</div>
+</div>
 
 
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">Notes</h3>
-                <div class="card-options">       
-                    <a href="#" class="btn btn-primary">Add Customer Notes</a>
-                </div>
             </div>
             <div class="card-body">
-                <ul class="list-group card-list-group">
-                    <li class="list-group-item py-5">
+                <form method="post" v-on:submit.prevent="addCustomerToGroup" action="">
+                      <div class="form-group">
+                        <label class="form-label">New Note</label>
+                        <textarea class="form-control" rows="2" name="new_note" id="new_note" v-model="current_note"></textarea>
+                      </div>
+                      <div class="form-group">
+                        <button class="btn btn-primary btn-block" v-if="!savingNote" v-on:click.prevent="saveNote">Save Note</button>
+                      </div>
+
+                </form>
+
+
+                <!-- v-bind:class="{'mr-1':  note.message.length < 60, 'm11': note.message.length > 60}" -->
+                <ul class="list-group card-list-group" v-if="notes.length > 0">
+                    <li class="list-group-item py-5" v-for="(note, key) in notes" v-bind:key="note.id">
                         <div class="media">
                             <div class="media-object avatar avatar-md mr-4" style="background-image: url({{ cdn('images/avatar/avatar-9.png') }})"></div>
                             <div class="media-body">
                                 <div class="media-heading">
-                                    <small class="float-right text-muted">12 min</small>
-                                    <h5>Peter Richards</h5>
+                                    <small class="float-right text-muted">Saved on - @{{ postedAtDate(note.created_at) }}</small>
+                                    <!-- <h5>Peter Richards</h5> -->
                                 </div>
                                 <div>
-                                    Donec id elit non mi porta gravida at eget metus. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Cum sociis natoque penatibus et magnis dis
-                                    parturient montes, nascetur ridiculus mus. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                    <br/>
+                                    @{{ note.message }}
                                 </div>
+                                <button class="btn btn-danger btn-sm" v-on:click.prevent="deleteNote(note.id, key)">Delete Note</button>
                             </div>
                         </div>
                     </li>
                 </ul>
-            </div>
-            <div class="card-footer text-right">
-                <button type="submit" class="btn btn-primary">Add Customer Notes</button>
+
+                <div class="alert alert-primary mt-5 mb-6" v-if="notes.length === 0">
+                    <div><strong>No Notes!</strong> Add Notes about @{{ customer.firstname }}.</div>
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -146,6 +196,9 @@
                 },
                 editCustomer: function (index) {
                     $('#edit-customer-modal').modal('show');
+                },
+                postedAtDate: function (dateString) {
+                    return moment(dateString).format('DD MMM, YYYY HH:mm')
                 },
                 updateCustomer: function () {
                     var context = this;
@@ -206,19 +259,9 @@
                         return this.customer.contacts.data[i].value;
                     }
                     return '';
-                }
-            }
-        });
-
-        new Vue({
-            el: '#profile-page-content',
-            data: {
-                customer: {!! json_encode($customer) !!}
-            },
-            methods: {
-
+                },
                 removeGroup: function (e) {
-                    let attrs = Hub.utilities.getElementAttributes(e.target);
+                    let attrs = app.utilities.getElementAttributes(e.target);
                     console.log(attrs);
                     let index = attrs['data-index'] || null;
                     let group = typeof this.customer.groups.data[index] !== 'undefined' ? this.customer.groups.data[index] : null;
@@ -226,12 +269,12 @@
                         return false;
                     }
                     if (this.processing) {
-                        Materialize.toast('Please wait till the current activity completes...', 4000);
+                        //Materialize.toast('Please wait till the current activity completes...', 4000);
                         return;
                     }
                     this.processing = true;
                     let context = this;
-                    axios.delete("/xhr/crm/groups/" + group.id + "/customers", {
+                    axios.delete("/mcu/customers-groups/" + group.id, {
                         data: {customers: [context.customer.id]}
                     }).then(function (response) {
                         console.log(response);
@@ -241,7 +284,8 @@
                             context.addedGroups = context.customer.groups.data.map(function (e) { return e.id; });
                         }
                         context.processing = false;
-                        Materialize.toast('Group '+group.name+' removed.', 2000);
+                        //Materialize.toast('Group '+group.name+' removed.', 2000);
+                        return swal("Deleted!", "Group "+group.name+" was successfully deleted", "success");
                     })
                         .catch(function (error) {
                             var message = '';
@@ -267,13 +311,14 @@
                 addCustomerToGroup: function () {
                     let context = this;
                     this.processing =  true;
-                    axios.post("/xhr/crm/groups/" + context.addToGroup.group + "/customers", {
+                    axios.post("/mcu/customers-groups/" + context.addToGroup.group, {
                         customers: [context.customer.id]
                     }).then(function (response) {
                         console.log(response);
                         context.processing = false;
-                        Materialize.toast('Group added.', 3000);
+                        //Materialize.toast('Group added.', 3000);
                         window.location = '{{ url()->current() }}'
+                        return swal("Added!", "Group successfully added", "success");
                     })
                         .catch(function (error) {
                             var message = '';
@@ -292,11 +337,9 @@
                                 message = error.message;
                             }
                             context.savingNote = false;
-                            Materialize.toast('Error: '+message, 4000);
+                            //Materialize.toast('Error: '+message, 4000);
+                            swal("Add Failed:", message, "warning");
                         });
-                },
-                postedAtDate: function (dateString) {
-                    return moment(dateString).format('DD MMM, YYYY HH:mm')
                 },
                 deleteNote: function (id, index) {
                     var context = this;
@@ -304,7 +347,7 @@
                         Materialize.toast('Wait till the current activity completes.', 3000);
                         return;
                     }
-                    swal({
+                    Swal.fire({
                         title: "Are you sure?",
                         text: "You are about to delete this note.",
                         type: "warning",
@@ -312,14 +355,16 @@
                         confirmButtonColor: "#DD6B55",
                         confirmButtonText: "Yes, delete it!",
                         closeOnConfirm: false,
-                        showLoaderOnConfirm: true
-                    }, function() {
+                        showLoaderOnConfirm: true,
+                        preConfirm: (delete_notes) => {
                         this.deleting = true;
-                        axios.delete("/xhr/crm/customers/" + context.customer.id + "/notes", {
+                        return axios.delete("/mcu/customers-notes/" + context.customer.id, {
                             data: {id: id}
-                        }).then(function (response) {
+                        })
+                            .then(function (response) {
                                 console.log(response);
                                 context.deleting = false;
+                                window.location = '{{ url()->current() }}'
                                 return swal("Deleted!", "The note was successfully deleted.", "success");
                             })
                             .catch(function (error) {
@@ -341,19 +386,22 @@
                                 context.deleting = false;
                                 return swal("Delete Failed", message, "warning");
                             });
+                        },
+                        allowOutsideClick: () => !Swal.isLoading() 
                     });
                 },
                 saveNote: function () {
                     var context = this;
                     this.savingNote =  true;
-                    axios.post("/xhr/crm/customers/" + context.customer.id + "/notes", {
+                    axios.post("/mcu/customers-notes/" + context.customer.id, {
                         note: context.current_note
                     }).then(function (response) {
                             console.log(response);
                             context.savingNote = false;
                             context.notes.splice(0, 0, response.data);
                             context.current_note = "";
-                            Materialize.toast('Note saved.', 3000);
+                            //Materialize.toast('Note saved.', 3000);
+                            return swal("Saved!", "Note successfully saved", "success");
                         })
                         .catch(function (error) {
                             var message = '';
@@ -372,15 +420,17 @@
                                 message = error.message;
                             }
                             context.savingNote = false;
-                            Materialize.toast('Error: '+message, 4000);
+                            //Materialize.toast('Error: '+message, 4000);
+                            return swal("Error Saving:", message, "warning");
                         });
                 }
+
             },
             mounted: function () {
                 var context = this;
                 this.addedGroups = this.customer.groups.data.map(function (e) { return e.id; });
                 this.savingNote =  true;
-                axios.get("/xhr/crm/customers/" + context.customer.id + "/notes")
+                axios.get("/mcu/customers-notes/" + context.customer.id)
                     .then(function (response) {
                         console.log(response);
                         context.savingNote = false;
@@ -405,7 +455,7 @@
                         context.savingNote = false;
                     });
 
-                this.loading_deals = true;
+                /*this.loading_deals = true;
                 axios.get("/xhr/crm/customers/" + context.customer.id + "/deals")
                     .then(function (response) {
                         console.log(response);
@@ -429,11 +479,23 @@
                             message = error.message;
                         }
                         context.loading_deals = false;
-                    });
+                    });*/
             }
         });
 
         new Vue({
+            el: '#profile-page-content',
+            data: {
+            },
+            methods: {
+
+
+
+
+            }
+        });
+
+        /*new Vue({
             el: '#add-deal',
             data: {
                 customer: {!! json_encode($customer) !!},
@@ -451,6 +513,6 @@
                     this.defaultCurrency = 'NGN';
                 }
             }
-        });
+        });*/
     </script>
 @endsection
