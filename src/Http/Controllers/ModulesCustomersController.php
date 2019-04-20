@@ -20,7 +20,7 @@ class ModulesCustomersController extends Controller {
         $this->data = [
             'page' => ['title' => config('modules-customers.title')],
             'header' => ['title' => config('modules-customers.title')],
-            'selectedMenu' => 'customers',
+            'selectedMenu' => 'modules-customers',
             'submenuConfig' => 'navigation-menu.modules-customers.sub-menu',
             'submenuAction' => ''
         ];
@@ -36,7 +36,7 @@ class ModulesCustomersController extends Controller {
     {
         $this->data['page']['title'] .= ' &rsaquo; Customer Manager';
         $this->data['header']['title'] = 'Customer Manager';
-        $this->data['selectedMenu'] = 'customers';
+        $this->data['selectedSubMenu'] = 'customers-customers';
         $this->data['submenuAction'] = '<a href="'.route("customers-new").'" class="btn btn-primary btn-block">Add Customer</a>';
 
         $this->setViewUiResponse($request);
@@ -73,7 +73,7 @@ class ModulesCustomersController extends Controller {
     {
         $this->data['page']['title'] .= ' &rsaquo; New Customer';
         $this->data['header']['title'] = 'New Customer';
-        $this->data['selectedMenu'] = 'customers';
+        $this->data['selectedSubMenu'] = 'customers-customer';
         //$this->data['submenuAction'] = '<a href="'.route("customers-new").'" class="btn btn-primary btn-block">Add Customer</a>';
 
         $this->setViewUiResponse($request);
@@ -177,7 +177,7 @@ class ModulesCustomersController extends Controller {
     {
         $this->data['page']['title'] .= ' &rsaquo; Customer Profile';
         $this->data['header']['title'] = 'Customer Profile';
-        $this->data['selectedMenu'] = 'customer';
+        $this->data['selectedSubMenu'] = 'customers-customer';
         $this->data['submenuAction'] = '<a href="'.route("customers-new").'" class="btn btn-primary btn-block">Add Customer</a>';
 
         $this->setViewUiResponse($request);
@@ -421,7 +421,7 @@ class ModulesCustomersController extends Controller {
     {
         $this->data['page']['title'] .= ' &rsaquo; Custom Fields';
         $this->data['header']['title'] = 'Custom Fields';
-        $this->data['selectedMenu'] = 'custom-fields';
+        $this->data['selectedSubMenu'] = 'customers-custom-fields';
         $this->data['submenuAction'] = '<a href="#" v-on:click.prevent="newField" class="btn btn-primary btn-block">Add Custom Field</a>';
 
         $this->setViewUiResponse($request);
@@ -502,8 +502,8 @@ class ModulesCustomersController extends Controller {
     public function groups(Request $request, Sdk $sdk)
     {
         $this->data['page']['title'] .= ' &rsaquo; Groups';
-        $this->data['header']['title'] .= ' &rsaquo; Groups';
-        $this->data['selectedMenu'] = 'groups';
+        $this->data['header']['title'] = 'Customer Groups';
+        $this->data['selectedSubMenu'] = 'customers-groups';
         $this->data['submenuAction'] = '<a href="#" v-on:click.prevent="createGroup" class="btn btn-primary btn-block">Add Group</a>';
 
         $this->setViewUiResponse($request);

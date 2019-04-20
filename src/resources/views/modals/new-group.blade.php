@@ -18,11 +18,11 @@
                 <textarea class="form-control" id="description" name="description" class="materialize-textarea" v-model="group.description"></textarea>
               </div>
             </fieldset>
+            <input type="hidden" name="group_id" id="grp-group-id" :value="group.id" v-if="typeof group.id !== 'undefined'" />
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <input type="hidden" name="group_id" id="grp-group-id" :value="group.id" v-if="typeof group.id !== 'undefined'" />
         <button type="submit" name="save_group" form="form-customers-group-post" class="btn btn-primary">@{{ typeof group.id !== 'undefined' ? 'Update Group' : 'Create Group' }}</button>
       </div>
     </div>

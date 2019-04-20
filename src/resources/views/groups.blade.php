@@ -64,45 +64,54 @@
                     group.is_default = group.is_default ? 1 : 0;
                     this.group = group;
                     let context = this;
-                    Swal.fire({
-                        title: "Are you sure?",
-                        text: "You are about to delete group " + context.group.name,
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "Yes, delete it!",
-                        showLoaderOnConfirm: true,
-                        preConfirm: (login) => {
-                        return axios.delete("/mcu/groups-delete/" + context.group.id)
-                            .then(function (response) {
-                                console.log(response);
-                                context.groups.splice(index, 1);
-                                return swal("Deleted!", "The group was successfully deleted.", "success");
-                            })
-                            .catch(function (error) {
-                                var message = '';
-                                if (error.response) {
-                                    // The request was made and the server responded with a status code
-                                    // that falls out of the range of 2xx
-                                    var e = error.response.data.errors[0];
-                                    message = e.title;
-                                } else if (error.request) {
-                                    // The request was made but no response was received
-                                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                                    // http.ClientRequest in node.js
-                                    message = 'The request was made but no response was received';
-                                } else {
-                                    // Something happened in setting up the request that triggered an Error
-                                    message = error.message;
-                                }
-                                return swal("Delete Failed", message, "warning");
-                            });
-                        },
-                        allowOutsideClick: () => !Swal.isLoading()
-                    })
-                    /*.then(function() {
-                        Swal.fire('Ajax request finished!')
-                    })*/
+                    let customer_count = typeof group.customers_count !== 'undefined' ? group.customers_count : 0;
+                    if (customer_count<1) {
+                        Swal.fire({
+                            title: "Are you sure?",
+                            text: "You are about to delete group " + context.group.name,
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, delete it!",
+                            showLoaderOnConfirm: true,
+                            preConfirm: (login) => {
+                            return axios.delete("/mcu/groups-delete/" + context.group.id)
+                                .then(function (response) {
+                                    console.log(response);
+                                    context.groups.splice(index, 1);
+                                    return swal("Deleted!", "The group was successfully deleted.", "success");
+                                })
+                                .catch(function (error) {
+                                    var message = '';
+                                    if (error.response) {
+                                        // The request was made and the server responded with a status code
+                                        // that falls out of the range of 2xx
+                                        var e = error.response.data.errors[0];
+                                        message = e.title;
+                                    } else if (error.request) {
+                                        // The request was made but no response was received
+                                        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                                        // http.ClientRequest in node.js
+                                        message = 'The request was made but no response was received';
+                                    } else {
+                                        // Something happened in setting up the request that triggered an Error
+                                        message = error.message;
+                                    }
+                                    return swal("Delete Failed", message, "warning");
+                                });
+                            },
+                            allowOutsideClick: () => !Swal.isLoading()
+                        })
+                        /*.then(function() {
+                            Swal.fire('Ajax request finished!')
+                        })*/
+                    } else {
+                        Swal.fire({
+                            title: "Unable to Delete!",
+                            text: "The group \"" + context.group.name + "\" has " + customer_count + " customer(s). Remove them first and the retry deleting.",
+                            type: "error"
+                        })
+                    }
                 }
             }
         });
