@@ -10,6 +10,7 @@ use App\Http\Controllers\HomeController;
 use Hostville\Dorcas\Sdk;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use App\Exceptions\DeletingFailedException;
 use App\Exceptions\RecordNotFoundException;
 
 class ModulesCustomersController extends Controller {

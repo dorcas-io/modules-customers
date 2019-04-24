@@ -27,85 +27,79 @@
                     <span class="fa fa-address-card"></span> Edit Profile
                 </button>
             </div>
-        @include('modules-customers::modals.edit')
+            @include('modules-customers::modals.edit')
         </div>
 
         <div class="card">
-          <div class="card-status bg-green"></div>
-          <div class="card-header">
-            <h3 class="card-title">Custom Fields</h3>
-          </div>
-          <div class="card-body">
-                    @if (!empty($customer->contacts['data']))
-                        <!-- Profile About Details  -->
-                        <ul class="list-group">
-                            @foreach ($customer->contacts['data'] as $contact)
-                                <li class="list-group-item">
-                                    <i class="fa {{ suggest_contact_field_icon_name_tabler($contact['name']) }}" aria-hidden="true"></i>
-                                    <h5 class="list-group-item-heading">{{ title_case($contact['name']) }}</h5>
-                                    <p class="list-group-item-text">{{ $contact['value']}}</p>
-                                </li>
-                            @endforeach
-                        </ul>
-                        <!--/ Profile About Details  -->
-                    @endif     
-          </div>
+            <div class="card-status bg-green"></div>
+            <div class="card-header">
+                <h3 class="card-title">Custom Fields</h3>
+            </div>
+            <div class="card-body">
+                @if (!empty($customer->contacts['data']))
+                <!-- Profile About Details  -->
+                <ul class="list-group">
+                    @foreach ($customer->contacts['data'] as $contact)
+                    <li class="list-group-item">
+                        <i class="fa {{ suggest_contact_field_icon_name_tabler($contact['name']) }}" aria-hidden="true"></i>
+                        <h5 class="list-group-item-heading">{{ title_case($contact['name']) }}</h5>
+                        <p class="list-group-item-text">{{ $contact['value']}}</p>
+                    </li>
+                    @endforeach
+                </ul>
+                <!--/ Profile About Details  -->
+                @endif
+            </div>
         </div>
-
     </div>
 
 
     <div class="col-md-5 col-xl-5">
-
         <div class="card">
-          <div class="card-status bg-blue"></div>
-          <div class="card-header">
-            <h3 class="card-title">Groups</h3>
-        </div>
-        <div class="card-body">
-            Manage <strong>groups</strong> that @{{ customer.firstname }} belongs to below:
-            <ul class="nav nav-tabs nav-justified">
-              <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#profile_groups">Groups</a>
-            </li>
-</ul>
-
-<div class="tab-content">
-  <div class="tab-pane container active" id="profile_groups">
-    <br/>
-    <form method="post" v-on:submit.prevent="addCustomerToGroup" action="">
-        {{ csrf_field() }}
-        <fieldset class="form-fieldset">
-        <div class="row">
-            <div class="col-md-6 form-group">
-                <select id="grp-customer" v-model="addToGroup.group" class="form-control" required>
-                    <option value="" disabled>Select a Group</option>
-                    <option v-for="group in groups" v-if="addedGroups.indexOf(group.id) === -1"
-                    :key="group.id" :value="group.id">@{{ group.name }}</option>
-                </select>
+            <div class="card-status bg-blue"></div>
+            <div class="card-header">
+                <h3 class="card-title">Groups</h3>
             </div>
-            <div class="col-md-6">
-                <button class="btn btn-primary" type="submit" name="action">Add to Group</button>
+            <div class="card-body">
+                Manage <strong>groups</strong> that @{{ customer.firstname }} belongs to below:
+                <ul class="nav nav-tabs nav-justified">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#profile_groups">Groups</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane container active" id="profile_groups">
+                        <br/>
+                        <form method="post" v-on:submit.prevent="addCustomerToGroup" action="">
+                            {{ csrf_field() }}
+                            <fieldset class="form-fieldset">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <select id="grp-customer" v-model="addToGroup.group" class="form-control" required>
+                                            <option value="" disabled>Select a Group</option>
+                                            <option v-for="group in groups" v-if="addedGroups.indexOf(group.id) === -1"
+                                            :key="group.id" :value="group.id">@{{ group.name }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button class="btn btn-primary" type="submit" name="action">Add to Group</button>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+
+                        <div class="col-md-6" v-if="typeof customer.groups !== 'undefined' && customer.groups.data.length > 0">
+                            <div class="tag"v-for="(group, index) in customer.groups.data" :key="group.id">
+                              @{{ group.name }}
+                              <a href="#" class="tag-addon tag-danger"><i class="fe fe-trash" data-ignore-click="true" v-bind:data-index="index"
+                                v-on:click.prevent="removeGroup($event)"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </fieldset>
-    </form>
-
-    <div class="col-md-6" v-if="typeof customer.groups !== 'undefined' && customer.groups.data.length > 0">
-        <div class="tag"v-for="(group, index) in customer.groups.data" :key="group.id">
-          @{{ group.name }}
-          <a href="#" class="tag-addon tag-danger"><i class="fe fe-trash" data-ignore-click="true" v-bind:data-index="index"
-                    v-on:click.prevent="removeGroup($event)"></i></a>
-        </div>
-    </div>
-</div>
-</div>
-
-
-
-</div>
-</div>
-
 
         <div class="card">
             <div class="card-header">
@@ -113,16 +107,14 @@
             </div>
             <div class="card-body">
                 <form method="post" v-on:submit.prevent="addCustomerToGroup" action="">
-                      <div class="form-group">
+                    <div class="form-group">
                         <label class="form-label">New Note</label>
                         <textarea class="form-control" rows="2" name="new_note" id="new_note" v-model="current_note"></textarea>
-                      </div>
-                      <div class="form-group">
+                    </div>
+                    <div class="form-group">
                         <button class="btn btn-primary btn-block" v-if="!savingNote" v-on:click.prevent="saveNote">Save Note</button>
-                      </div>
-
+                    </div>
                 </form>
-
 
                 <!-- v-bind:class="{'mr-1':  note.message.length < 60, 'm11': note.message.length > 60}" -->
                 <ul class="list-group card-list-group" v-if="notes.length > 0">
@@ -148,9 +140,9 @@
                     <div><strong>No Notes!</strong> Add Notes about @{{ customer.firstname }}.</div>
                 </div>
 
-
             </div>
         </div>
+
     </div>
 </div>
 @include('modules-customers::modals.new-deal')
@@ -277,8 +269,8 @@
                     axios.delete("/mcu/customers-groups/" + group.id, {
                         data: {customers: [context.customer.id]}
                     }).then(function (response) {
-                        console.log(response);
-                        console.log(index);
+                        //console.log(response);
+                        //console.log(index);
                         if (index !== null) {
                             context.customer.groups.data.splice(index, 1);
                             context.addedGroups = context.customer.groups.data.map(function (e) { return e.id; });
@@ -304,7 +296,7 @@
                                 // Something happened in setting up the request that triggered an Error
                                 message = error.message;
                             }
-                            context.saving = false;
+                            //context.saving = false;
                             return swal("Delete Failed", message, "warning");
                         });
                 },

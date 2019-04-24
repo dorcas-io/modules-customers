@@ -131,7 +131,7 @@
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
+                confirmButtonText: "Yes, delete!",
                 showLoaderOnConfirm: true,
                 preConfirm: (delete_customer) => {
                 this.deleting = true;

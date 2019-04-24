@@ -5,11 +5,11 @@
 });*/
 
 Route::group(['middleware' => ['web'], 'namespace' => 'Dorcas\ModulesCustomers\Http\Controllers', 'prefix' => 'mcu'], function () {
-    Route::get('customers-main', 'ModulesCustomersController@main')->name('customers-main');
+    Route::get('/customers-main', 'ModulesCustomersController@main')->name('customers-main');
     Route::get('/customers-customers', 'ModulesCustomersController@customers')->name('customers-customers');
     Route::get('/customers-custom-fields', 'ModulesCustomersController@custom_fields')->name('customers-custom-fields');
-    Route::get('/groups', 'ModulesCustomersController@groups')->name('customers-groups');
-    Route::post('/groups', 'ModulesCustomersController@groups_post')->name('customers-groups-post');
+    Route::get('/customers-groups', 'ModulesCustomersController@groups')->name('customers-groups');
+    Route::post('/customers-groups', 'ModulesCustomersController@groups_post')->name('customers-groups-post');
     Route::delete('/groups-delete/{id}', 'ModulesCustomersController@groups_delete');
     Route::get('/customers-search', 'ModulesCustomersController@customers_search')->name('customers_search');
     Route::get('/customers-customers/{id}', 'ModulesCustomersController@customers_view');
@@ -28,7 +28,7 @@ Route::group(['middleware' => ['web'], 'namespace' => 'Dorcas\ModulesCustomers\H
     Route::put('/customers-custom-fields/{id}', 'ModulesCustomersController@custom_fields_update');
 });
 
-Route::group(['middleware' => ['web'], 'namespace' => 'Ajax', 'prefix' => 'xhr'], function () {
+Route::group(['middleware' => ['web'], 'namespace' => 'Ajax', 'prefix' => 'xxhr'], function () {
     Route::get('/crm/custom-fields', 'Crm\CustomFields@search');
     Route::get('/crm/customers/{id}/deals', 'Crm\Deals@search');
     Route::post('/crm/customers/{id}/deals', 'Crm\Deals@create');
