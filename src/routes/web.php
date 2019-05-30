@@ -4,7 +4,7 @@
     Route::get('sales', 'ModulesCustomersController@index')->name('sales');
 });*/
 
-Route::group(['middleware' => ['web'], 'namespace' => 'Dorcas\ModulesCustomers\Http\Controllers', 'prefix' => 'mcu'], function () {
+Route::group(['middleware' => ['auth','web'], 'namespace' => 'Dorcas\ModulesCustomers\Http\Controllers', 'prefix' => 'mcu'], function () {
     Route::get('/customers-main', 'ModulesCustomersController@main')->name('customers-main');
     Route::get('/customers-customers', 'ModulesCustomersController@customers')->name('customers-customers');
     Route::get('/customers-custom-fields', 'ModulesCustomersController@custom_fields')->name('customers-custom-fields');

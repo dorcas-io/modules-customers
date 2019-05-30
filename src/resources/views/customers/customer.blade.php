@@ -90,7 +90,7 @@
                         </form>
 
                         <div class="col-md-6" v-if="typeof customer.groups !== 'undefined' && customer.groups.data.length > 0">
-                            <div class="tag"v-for="(group, index) in customer.groups.data" :key="group.id">
+                            <div class="tag" v-for="(group, index) in customer.groups.data" :key="group.id">
                               @{{ group.name }}
                               <a href="#" class="tag-addon tag-danger"><i class="fe fe-trash" data-ignore-click="true" v-bind:data-index="index"
                                 v-on:click.prevent="removeGroup($event)"></i></a>
@@ -220,8 +220,10 @@
                                 if (error.response) {
                                     // The request was made and the server responded with a status code
                                     // that falls out of the range of 2xx
-                                    var e = error.response.data.errors[0];
-                                    message = e.title;
+                            //var e = error.response.data.errors[0];
+                            //message = e.title;
+                            var e = error.response;
+                            message = e.data.message;
                                 } else if (error.request) {
                                     // The request was made but no response was received
                                     // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -285,8 +287,10 @@
                             if (error.response) {
                                 // The request was made and the server responded with a status code
                                 // that falls out of the range of 2xx
-                                var e = error.response.data.errors[0];
-                                message = e.title;
+                            //var e = error.response.data.errors[0];
+                            //message = e.title;
+                            var e = error.response;
+                            message = e.data.message;
                             } else if (error.request) {
                                 // The request was made but no response was received
                                 // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -317,8 +321,10 @@
                             if (error.response) {
                                 // The request was made and the server responded with a status code
                                 // that falls out of the range of 2xx
-                                var e = error.response.data.errors[0];
-                                message = e.title;
+                            //var e = error.response.data.errors[0];
+                            //message = e.title;
+                            var e = error.response;
+                            message = e.data.message;
                             } else if (error.request) {
                                 // The request was made but no response was received
                                 // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -364,8 +370,10 @@
                                 if (error.response) {
                                     // The request was made and the server responded with a status code
                                     // that falls out of the range of 2xx
-                                    var e = error.response.data.errors[0];
-                                    message = e.title;
+                            //var e = error.response.data.errors[0];
+                            //message = e.title;
+                            var e = error.response;
+                            message = e.data.message;
                                 } else if (error.request) {
                                     // The request was made but no response was received
                                     // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -400,8 +408,10 @@
                             if (error.response) {
                                 // The request was made and the server responded with a status code
                                 // that falls out of the range of 2xx
-                                var e = error.response.data.errors[0];
-                                message = e.title;
+                            //var e = error.response.data.errors[0];
+                            //message = e.title;
+                            var e = error.response;
+                            message = e.data.message;
                             } else if (error.request) {
                                 // The request was made but no response was received
                                 // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -433,8 +443,10 @@
                         if (error.response) {
                             // The request was made and the server responded with a status code
                             // that falls out of the range of 2xx
-                            var e = error.response.data.errors[0];
-                            message = e.title;
+                            //var e = error.response.data.errors[0];
+                            //message = e.title;
+                            var e = error.response;
+                            message = e.data.message;
                         } else if (error.request) {
                             // The request was made but no response was received
                             // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -459,8 +471,10 @@
                         if (error.response) {
                             // The request was made and the server responded with a status code
                             // that falls out of the range of 2xx
-                            var e = error.response.data.errors[0];
-                            message = e.title;
+                            //var e = error.response.data.errors[0];
+                            //message = e.title;
+                            var e = error.response;
+                            message = e.data.message;
                         } else if (error.request) {
                             // The request was made but no response was received
                             // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
