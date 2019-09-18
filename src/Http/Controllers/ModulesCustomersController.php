@@ -131,7 +131,8 @@ class ModulesCustomersController extends Controller {
         } catch (\Exception $e) {
             $response = (tabler_ui_html_response([$e->getMessage()]))->setType(UiResponse::TYPE_ERROR);
         }
-        return redirect(url()->current())->with('UiResponse', $response);
+        //return redirect(url()->current())->with('UiResponse', $response);
+        return redirect(route('customers-customers'))->with('UiResponse', $response);
     }
 
 
