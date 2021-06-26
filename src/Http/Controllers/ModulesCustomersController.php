@@ -44,6 +44,8 @@ class ModulesCustomersController extends Controller {
         $customerCount = 0;
         if ($request->has('groups')) {
             $this->data['groupFilters'] = $request->input('groups');
+        } else {
+            $this->data['groupFilters'] = "";
         }
         $response = $sdk->createCustomerResource()->addQueryArgument('limit', 1)->send('get');
         if ($response->isSuccessful()) {

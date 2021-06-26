@@ -23,7 +23,7 @@
                            data-id-field="id"
                            data-row-attributes="processRows"
                            data-response-handler="processRecords"
-                           data-url="{{ route('customers_search') }}?groups={{ $groupFilters or '' }}"
+                           data-url="{{ route('customers_search') }}?groups={{ $groupFilters ?? '' }}"
                            data-page-list="[10,25,50,100,200,300,500]"
                            data-sort-class="sortable"
                            data-search-on-enter-key="true"

@@ -310,11 +310,11 @@
                     axios.post("/mcu/customers-groups/" + context.addToGroup.group, {
                         customers: [context.customer.id]
                     }).then(function (response) {
-                        console.log(response);
+                        //console.log(response);
                         context.processing = false;
                         //Materialize.toast('Group added.', 3000);
                         window.location = '{{ url()->current() }}'
-                        return swal("Added!", "Group successfully added", "success");
+                        return swal("Added!", context.customer.firstname + " successfully added to group", "success");
                     })
                         .catch(function (error) {
                             var message = '';

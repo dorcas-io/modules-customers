@@ -62,7 +62,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <button class="btn btn-primary btn-block" type="submit" name="action">
-                            Save Profile
+                            Add Customer
                         </button>
                     </div>
                 </div>
