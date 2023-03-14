@@ -8,22 +8,30 @@
 @include('layouts.blocks.tabler.alert')
 
 <div class="row">
+    <div class="col-md-10 col-xl-10"></div>
+    <div v-if="!showEmptyState" class="col-md-2 col-xl-2">
+        <button type="submit" onclick="masDeleteFunc()" class="btn btn-danger">
+            Bulk Delete Customer
+        </button>
+    </div>
+    
+</div>
+
+
+<div class="row">
     @include('layouts.blocks.tabler.sub-menu')
 
     <div class="col-md-9 col-xl-9">
+        <br><br>
         <div class="row row-cards row-deck" id="customers-list">
-            <div v-if="!showEmptyState">
-                <button type="submit" onclick="masDeleteFunc()" class="btn btn-danger">
-                    Bulk Delete Customer
-                </button>
-            </div>
+            
             <div class="col-sm-12">
                 <div class="table-responsive">
                     <table class="table card-table table-vcenter text-nowrap bootstrap-table"
                            data-pagination="true"
                            data-search="false"
                            data-side-pagination="server"
-                           data-show-refresh="true"
+                           data-show-refresh="false"
                            data-unique-id="id"
                            data-id-field="id"
                            data-row-attributes="processRows"
