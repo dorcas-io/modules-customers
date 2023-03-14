@@ -146,6 +146,7 @@ class ModulesCustomersController extends Controller {
      */
     public function customers_search(Request $request, Sdk $sdk)
     {
+       
         $search = $request->query('search', '');
         $sort = $request->query('sort', '');
         $order = $request->query('order', 'asc');

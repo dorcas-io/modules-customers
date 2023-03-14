@@ -12,11 +12,16 @@
 
     <div class="col-md-9 col-xl-9">
         <div class="row row-cards row-deck" id="customers-list">
+            <div v-if="!showEmptyState">
+                <button type="submit" onclick="masDeleteFunc()" class="btn btn-danger">
+                    Bulk Delete Customer
+                </button>
+            </div>
             <div class="col-sm-12">
                 <div class="table-responsive">
                     <table class="table card-table table-vcenter text-nowrap bootstrap-table"
                            data-pagination="true"
-                           data-search="true"
+                           data-search="false"
                            data-side-pagination="server"
                            data-show-refresh="true"
                            data-unique-id="id"
@@ -32,6 +37,7 @@
                        v-on:click="clicked($event)">
                         <thead>
                         <tr>
+                            <th data-field="checkbox">#</th>
                             <th class="w-1" data-field="avatar">&nbsp;</th>
                             <th data-field="firstname">First Name</th>
                             <th data-field="lastname">Last Name</th>
@@ -96,6 +102,7 @@
         },
         clicked: function ($event) {
             let target = $event.target;
+          
             if (!target.hasAttribute('data-action')) {
                 target = target.parentNode.hasAttribute('data-action') ? target.parentNode : target;
             }
@@ -257,6 +264,7 @@
     }
 
     function processRows(row, index) {
+            row.checkbox = "<input type=\"checkbox\" data-index=" + index +" onChange=\"massDelete()\" class=\"customerId\" value=" + row.id +" >";
             //row.buttons = '<a class="waves-effect btn-flat btn-small grey-text text-darken-3 view" href="/apps/crm/customers/' + row.id + '">View</a>'+
             //'<a class="waves-effect btn-flat remove red-text btn-small" href="#" data-id="'+row.id+'" data-name="'+row.name+'">DELETE</a>';
 
@@ -281,4 +289,75 @@
             return row;
     }
 </script>
+<script type="text/javascript">
+
+    let customerIds = [];
+    var uniqueIds = []
+   
+    function massDelete(){
+      
+       var select = document.getElementsByClassName('customerId');
+        
+       for (var i = 0; i < select.length; i++) {
+               if (select[i].checked) {
+                   customerIds.push(select[i].value)
+               }
+           }
+           uniqueIds = [...new Set(customerIds)];
+        
+           sessionStorage.setItem("unique_ids", uniqueIds.length);
+           sessionStorage.getItem("unique_ids")
+        
+   
+    }
+   
+    function masDeleteFunc(){
+   
+           if(uniqueIds.length < 1){
+               message = "No item to delete"
+               return swal("Delete Failed", message, "warning");
+           }
+   
+           var result = confirm("Want to delete?");
+           if (result) {
+                   for(var i = 0;  i < uniqueIds.length ; i++){
+                           var context = this;
+                           let res = axios.delete("/mcu/customers-customers/" + uniqueIds[i])
+                           .then(function (response) {
+                               //console.log(response);
+                               context.visible = false;
+                               context.contactsCount -= 1;
+                               sessionStorage.removeItem('unique_ids');
+                               $('#customers-list').bootstrapTable('removeByUniqueId', response.data.id);
+                               return swal("Deleted!", "The customer was successfully deleted.", "success");
+                           })
+                       .catch(function (error) {
+                           var message = '';
+                           console.log(error);
+                           if (error.response) {
+                               // The request was made and the server responded with a status code
+                               // that falls out of the range of 2xx
+                               //var e = error.response.data.errors[0];
+                               //message = e.title;
+                               var e = error.response;
+                               message = e.data.message;
+                           } else if (error.request) {
+                               // The request was made but no response was received
+                               // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                               // http.ClientRequest in node.js
+                               message = 'The request was made but no response was received';
+                           } else {
+                               // Something happened in setting up the request that triggered an Error
+                               message = error.message;
+                           }
+                       return swal("Delete Failed", message, "warning");
+                   });
+               }
+           }
+       }
+   
+    
+   
+   
+   </script>
 @endsection
