@@ -58,11 +58,11 @@
                     confirmButtonText: "Add Field",
                     showLoaderOnConfirm: true,
                     preConfirm: (result) => {
-                        console.log(result);
+                        //console.log(result);
                     return axios.post("/mcu/customers-custom-fields", {
                             name: result
                         }).then(function (response) {
-                            console.log(response);
+                            //console.log(response);
                             vm.fields.push({id: response.data.id, name: response.data.name});
                             return swal("Success", "The custom field was successfully created.", "success");
                         })
