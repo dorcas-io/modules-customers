@@ -28,12 +28,12 @@ Route::group(['middleware' => ['auth','web'], 'namespace' => 'Dorcas\ModulesCust
     Route::put('/customers-custom-fields/{id}', 'ModulesCustomersController@custom_fields_update');
 });
 
-Route::group(['middleware' => ['web'], 'namespace' => 'Ajax', 'prefix' => 'xxhr'], function () {
-    Route::get('/crm/custom-fields', 'Crm\CustomFields@search');
-    Route::get('/crm/customers/{id}/deals', 'Crm\Deals@search');
-    Route::post('/crm/customers/{id}/deals', 'Crm\Deals@create');
-    Route::post('/crm/deals/{id}', 'Crm\Deals@delete');
-});
+// Route::group(['middleware' => ['web'], 'namespace' => 'Ajax', 'prefix' => 'xxhr'], function () {
+//     Route::get('/crm/custom-fields', 'Crm\CustomFields@search');
+//     Route::get('/crm/customers/{id}/deals', 'Crm\Deals@search');
+//     Route::post('/crm/customers/{id}/deals', 'Crm\Deals@create');
+//     Route::post('/crm/deals/{id}', 'Crm\Deals@delete');
+// });
 
 
 
